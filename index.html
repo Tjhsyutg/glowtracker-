@@ -3,219 +3,323 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GlowTracker - Smart AI Skincare</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-    
+    <title>GlowSync AI | Pro Max</title>
     <style>
-        :root {
-            --primary: #6c5ce7;
-            --safe: #00b894;
-            --warn: #fdcb6e;
-            --danger: #d63031;
-        }
-
-        body { 
-            font-family: 'Poppins', sans-serif; 
-            margin: 0; 
-            /* මුළු පේජ් එකටම background එක මෙතනින් සකසනවා */
-            background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('img.jpg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            background-repeat: no-repeat;
-            min-height: 100vh;
-            color: #333;
-        }
-
-        .hero-header {
-            height: 200px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            text-align: center;
-        }
-
-        .app-container { max-width: 600px; margin: 0 auto 50px; padding: 0 15px; }
-
-        .card-box { 
-            background: rgba(255, 255, 255, 0.95); /* කාඩ් එක පිටුපස පින්තූරය පේන්න පොඩ්ඩක් විනිවිද පෙනෙන ලෙස */
-            padding: 20px; 
-            border-radius: 15px; 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2); 
-            margin-bottom: 20px; 
-        }
-
-        h3 { margin-top: 0; font-size: 1.1rem; color: #333; }
-        textarea, select, input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-family: inherit; box-sizing: border-box; }
-        
-        .btn { 
-            width: 100%; padding: 14px; border: none; border-radius: 10px; cursor: pointer; 
-            font-weight: 600; font-size: 1rem; margin-top: 10px; transition: 0.3s;
-        }
-        .btn-ai { background: var(--safe); color: white; }
-        .btn-cam { background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .btn-save { background: var(--primary); color: white; }
-
-        #aiReport { 
-            display: none; margin-top: 15px; padding: 15px; background: #f0fff4; 
-            border-radius: 10px; border: 1px dashed var(--safe); font-size: 0.9rem; line-height: 1.5;
-        }
-        
-        .product-item { 
-            background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; 
-            border-left: 5px solid var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
-        }
+        :root { --p-color: #a29bfe; --s-color: #55efc4; --w-color: #ff7675; --glass: rgba(0, 0, 0, 0.85); }
+        body { background: #000; color: white; font-family: 'Segoe UI', sans-serif; margin: 0; text-align: center; overflow-x: hidden; font-size: 1.1rem; } /* අකුරු ලොකු කරන ලදී */
+        .bg-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+        .bg-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1.2s ease; }
+        .active-bg { opacity: 0.5 !important; }
+        .container { max-width: 500px; margin: auto; padding: 25px; position: relative; z-index: 1; }
+        .glass { background: var(--glass); backdrop-filter: blur(15px); padding: 25px; border-radius: 25px; border: 1px solid rgba(255, 255, 255, 0.15); margin-top: 15px; }
+        .panel { display: none; animation: fadeIn 0.6s ease; }
+        .active-panel { display: block !important; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        #slClock { font-size: 3.2rem; font-weight: bold; color: var(--s-color); margin: 5px 0; }
+        .menu { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 15px; }
+        .m-btn { background: rgba(255,255,255,0.1); padding: 18px 5px; border-radius: 18px; cursor: pointer; border: 1px solid rgba(255,255,255,0.05); font-size: 1rem; font-weight: bold; transition: 0.3s; }
+        .m-btn:hover { background: rgba(255,255,255,0.2); }
+        .day-selector { display: flex; justify-content: space-between; margin: 15px 0; }
+        .day-btn { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--p-color); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .day-active { background: var(--p-color); color: #000; }
+        input, textarea, select { width: 100%; padding: 15px; border-radius: 15px; border: none; background: rgba(255,255,255,0.2); color: white; margin: 10px 0; box-sizing: border-box; font-size: 1.1rem; }
+        option { background: #333; color: white; }
+        .lang-switch { position: absolute; top: 10px; right: 10px; background: var(--p-color); color: #000; padding: 5px 12px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 0.9rem; }
+        .res-item { background: rgba(0,0,0,0.4); padding: 15px; border-radius: 15px; margin-bottom: 12px; border-left: 6px solid #fff; text-align: left; }
+        .res-bad { border-color: var(--w-color); }
+        .res-good { border-color: var(--s-color); }
+        .res-warning { border-color: #feca57; }
+        .res-title { font-weight: bold; display: block; margin-bottom: 5px; font-size: 1.2rem; text-transform: capitalize; color: var(--s-color); }
+        .res-desc { font-size: 1rem; opacity: 0.9; line-height: 1.5; }
+        #uvWarning { background: #ff7675; color: white; padding: 12px; border-radius: 15px; margin-bottom: 10px; font-weight: bold; font-size: 1.1rem; display: none; animation: blink 1.5s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
     </style>
 </head>
-<body>
+<body onload="initApp()">
 
-    <header class="hero-header">
-        <div>
-            <h1><i class="fas fa-sparkles"></i> GlowTracker AI</h1>
-            <p>Smart Skincare Assistant</p>
-        </div>
-    </header>
+    <div class="lang-switch" onclick="toggleLanguage()">EN / සිං</div>
 
-    <div class="app-container">
-        <section class="card-box">
-            <h3><i class="fas fa-user-circle"></i> Your Skin Type</h3>
-            <select id="userSkinType">
-                <option value="Oily">Oily Skin (තෙල් සහිත සම)</option>
-                <option value="Dry">Dry Skin (වියළි සම)</option>
-                <option value="Sensitive">Sensitive Skin (සංවේදී සම)</option>
-                <option value="Combination">Combination Skin (මිශ්‍ර සම)</option>
-            </select>
-        </section>
+    <audio id="alertSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
+    <audio id="beepSound" src="https://assets.mixkit.co/active_storage/sfx/951/951-preview.mp3"></audio>
 
-        <section class="card-box" style="border-left: 5px solid var(--safe);">
-            <h3><i class="fas fa-microscope"></i> AI Ingredient Checker</h3>
-            
-            <label for="camInput" class="btn btn-cam">
-                <i class="fas fa-camera"></i> Scan Ingredients Photo
-            </label>
-            <input type="file" id="camInput" accept="image/*" capture="environment" style="display:none;" onchange="scanImage(this)">
-
-            <textarea id="manualIngredients" rows="3" placeholder="Paste or scan ingredients here..." style="margin-top:10px;"></textarea>
-            
-            <button id="aiBtn" class="btn btn-ai">
-                <i class="fas fa-robot"></i> Analyze with AI ✨
-            </button>
-
-            <div id="aiReport">
-                <p id="aiReportText"></p>
-            </div>
-        </section>
-
-        <section class="card-box">
-            <h3><i class="fas fa-plus"></i> Add New Product</h3>
-            <input type="text" id="productName" placeholder="Product Name" style="margin-bottom:10px;">
-            <div style="display:flex; gap:10px; margin-bottom:10px;">
-                <select id="category">
-                    <option value="face">Face Care</option>
-                    <option value="body">Body Care</option>
-                    <option value="hair">Hair Care</option>
-                    <option value="makeup">Makeup</option>
-                </select>
-                <input type="date" id="startDate">
-            </div>
-            <button id="addBtn" class="btn btn-save">Save Product</button>
-        </section>
-
-        <div id="productContainer"></div>
+    <div class="bg-container">
+        <img id="bg-home" class="bg-img active-bg" src="https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=1200">
+        <img id="bg-lab" class="bg-img" src="https://images.unsplash.com/photo-1612817288484-6f916006741a?q=80&w=1200">
+        <img id="bg-expiry" class="bg-img" src="https://images.unsplash.com/photo-1512496015851-a90fb38ba796?q=80&w=1200">
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    <div class="container">
+        <div id="home" class="panel active-panel">
+            <h1 style="color:var(--p-color); margin-bottom:0; font-size: 2.5rem;">GlowSync AI</h1>
+            <div id="slClock">00:00:00</div>
+            <div id="uvWarning" class="lang-txt" data-en="🚨 HIGH UV: Apply Sun Cream!" data-si="🚨 අධික UV: සන්ක්‍රීම් ගාන්න!">🚨 HIGH UV: Apply Sun Cream!</div>
+            <div id="periodNotice" style="background:var(--p-color); color:#000; padding:12px; border-radius:15px; margin-bottom:10px; font-weight:bold; display:none;" class="lang-txt" data-en="🌸 Period is coming soon!" data-si="🌸 ඔසප් දිනය ළඟයි!">🌸 Period is coming soon!</div>
+            
+            <div class="glass" style="display:flex; justify-content:space-around; align-items:center;">
+                <div><small class="lang-txt" data-en="Temp" data-si="උෂ්ණත්වය">Temp</small><div id="temp" style="font-size: 1.5rem;">--°C</div></div>
+                <div><small class="lang-txt" data-en="UV Level" data-si="UV මට්ටම">UV Level</small><div id="uv-val" style="font-size: 1.5rem;">--</div></div>
+            </div>
 
-        // Firebase Config
-        const firebaseConfig = {
-            apiKey: "AIzaSyCCEt4Bv_vYzdsuMPrNpUHv8699jHZvF2g",
-            authDomain: "glowtracker-app.firebaseapp.com",
-            projectId: "glowtracker-app",
-            storageBucket: "glowtracker-app.firebasestorage.app",
-            messagingSenderId: "460233876580",
-            appId: "1:460233876580:web:9b19a5e33b7e8216e2eb71"
-        };
+            <div class="menu">
+                <div class="m-btn lang-txt" data-en="🔬 AI Lab" data-si="🔬 AI විද්‍යාගාරය" onclick="nav('lab', 'bg-lab')">🔬 AI Lab</div>
+                <div class="m-btn lang-txt" data-en="⌛ Products" data-si="⌛ නිපැයුම්" onclick="nav('exp', 'bg-expiry')">⌛ Products</div>
+                <div class="m-btn lang-txt" data-en="🩸 Cycle" data-si="🩸 මාස් ශුද්ධිය" onclick="nav('period', 'bg-home')">🩸 Cycle</div>
+                <div class="m-btn lang-txt" data-en="⚙️ Alarms" data-si="⚙️ සැකසුම්" onclick="nav('settings', 'bg-home')">⚙️ Alarms</div>
+            </div>
+            <button class="m-btn lang-txt" data-en="🚶 I'M GOING OUT" data-si="🚶 මම එළියට යනවා" style="width:100%; margin-top:15px; background:var(--s-color); color:#000; padding:22px; font-size: 1.2rem;" onclick="checkSuncream()">🚶 I'M GOING OUT</button>
+        </div>
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const GEMINI_API_KEY = "AIzaSyAHvOCkqn1PYIGcopR7G4QSW2Ywn9_M45E";
+        <div id="lab" class="panel">
+            <h2 onclick="nav('home', 'bg-home')" style="cursor:pointer; color:var(--p-color)" class="lang-txt" data-en="← Back" data-si="← ආපසු">← Back</h2>
+            <div class="glass">
+                <h3 class="lang-txt" data-en="🔬 AI Ingredient Lab" data-si="🔬 AI අමුද්‍රව්‍ය පරීක්ෂාව">🔬 AI Ingredient Lab</h3>
+                <select id="skinType">
+                    <option value="normal" class="lang-txt" data-en="Normal Skin" data-si="සාමාන්‍ය සම">Normal Skin</option>
+                    <option value="oily" class="lang-txt" data-en="Oily Skin" data-si="තෙල් සහිත සම">Oily Skin</option>
+                    <option value="dry" class="lang-txt" data-en="Dry Skin" data-si="වියළි සම">Dry Skin</option>
+                    <option value="sensitive" class="lang-txt" data-en="Sensitive Skin" data-si="සංවේදී සම">Sensitive Skin</option>
+                </select>
+                <textarea id="ingInput" rows="5" placeholder="Paste ingredients here..."></textarea>
+                <div style="display:flex; gap:10px;">
+                    <button onclick="deepAIAnalyze()" class="m-btn lang-txt" data-en="ANALYZE" data-si="විශ්ලේෂණය" style="flex:3; background:var(--s-color); color:#000;">ANALYZE</button>
+                    <button onclick="refreshLab()" class="m-btn" style="flex:1; background:var(--w-color);">🔄</button>
+                </div>
+                <div id="labRes" style="margin-top:15px;"></div>
+            </div>
+        </div>
 
-        // 1. Camera Scan (OCR)
-        window.scanImage = async (input) => {
-            const file = input.files[0];
-            if (!file) return;
-            const reportBox = document.getElementById('aiReport');
-            const reportText = document.getElementById('aiReportText');
-            reportBox.style.display = 'block';
-            reportText.innerText = "Scanning photo... 📷";
+        <div id="exp" class="panel">
+            <h2 onclick="nav('home', 'bg-home')" style="cursor:pointer; color:var(--p-color)" class="lang-txt" data-en="← Back" data-si="← ආපසු">← Back</h2>
+            <div class="glass">
+                <h3 class="lang-txt" data-en="⌛ Product Tracker" data-si="⌛ නිපැයුම් පරීක්ෂාව">⌛ Product Tracker</h3>
+                <input type="text" id="prodName" placeholder="Product Name">
+                <input type="date" id="prodDate">
+                <button class="m-btn lang-txt" data-en="ADD PRODUCT" data-si="එකතු කරන්න" style="width:100%; background:var(--p-color); color:#000;" onclick="addProduct()">ADD PRODUCT</button>
+                <div id="prodList" style="margin-top:15px;"></div>
+            </div>
+        </div>
 
-            try {
-                const result = await Tesseract.recognize(file, 'eng');
-                document.getElementById('manualIngredients').value = result.data.text;
-                reportText.innerText = "Scan Complete! Click 'Analyze with AI'.";
-            } catch (e) { 
-                reportText.innerText = "Scan failed. Please try a clearer photo."; 
-            }
-        };
+        <div id="settings" class="panel">
+            <h2 onclick="nav('home', 'bg-home')" style="cursor:pointer; color:var(--p-color)" class="lang-txt" data-en="← Back" data-si="← ආපසු">← Back</h2>
+            <div class="glass">
+                <h3 class="lang-txt" data-en="⚙️ Alarms" data-si="⚙️ එලාම්">⚙️ Alarms</h3>
+                <div class="day-selector" id="dayBox">
+                    <div class="day-btn" onclick="toggleDay(this,0)">S</div>
+                    <div class="day-btn" onclick="toggleDay(this,1)">M</div>
+                    <div class="day-btn" onclick="toggleDay(this,2)">T</div>
+                    <div class="day-btn" onclick="toggleDay(this,3)">W</div>
+                    <div class="day-btn" onclick="toggleDay(this,4)">T</div>
+                    <div class="day-btn" onclick="toggleDay(this,5)">F</div>
+                    <div class="day-btn" onclick="toggleDay(this,6)">S</div>
+                </div>
+                <input type="time" id="mIn">
+                <input type="time" id="nIn">
+                <button onclick="saveConfig()" class="m-btn lang-txt" data-en="SAVE" data-si="සුරකින්න" style="width:100%; background:var(--p-color); color:#000;">SAVE</button>
+            </div>
+        </div>
 
-        // 2. AI Analysis
-        document.getElementById('aiBtn').onclick = async () => {
-            const ing = document.getElementById('manualIngredients').value;
-            const skin = document.getElementById('userSkinType').value;
-            const reportBox = document.getElementById('aiReport');
-            const reportText = document.getElementById('aiReportText');
+        <div id="period" class="panel">
+            <h2 onclick="nav('home', 'bg-home')" style="cursor:pointer; color:var(--p-color)" class="lang-txt" data-en="← Back" data-si="← ආපසු">← Back</h2>
+            <div class="glass">
+                <h3 class="lang-txt" data-en="🩸 Cycle Tracker" data-si="🩸 ඔසප් චක්‍රය">🩸 Cycle Tracker</h3>
+                <input type="date" id="lastPeriodDate" onchange="savePeriod()">
+                <div id="periodStatus" style="margin-top:15px; font-weight:bold; color:var(--s-color); font-size: 1.2rem;"></div>
+            </div>
+        </div>
+    </div>
 
-            if (!ing) return alert("Please add ingredients!");
-            reportBox.style.display = 'block';
-            reportText.innerText = "AI is analyzing for " + skin + " skin... 🔍";
+    <script>
+        let currentLang = localStorage.getItem('glow_lang') || 'en';
+        let config = JSON.parse(localStorage.getItem('glow_config')) || { mTime:"", nTime:"", days:[0,1,2,3,4,5,6], products:[], periodDate:"" };
 
-            try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: `I have ${skin} skin. Analyze these ingredients: "${ing}". Is it safe? Highlight harmful ones and give 3 tips.` }] }]
-                    })
-                });
-                const data = await response.json();
-                if (data.error) {
-                    reportText.innerText = "API Error: " + data.error.message;
-                } else {
-                    reportText.innerText = data.candidates[0].content.parts[0].text;
-                }
-            } catch (e) { 
-                reportText.innerText = "Connection error. Check your API Key.";
-            }
-        };
+        function initApp() {
+            setInterval(updateClock, 1000);
+            updateWeather();
+            renderProducts();
+            checkPeriod();
+            loadSettingsUI();
+            updateLanguageUI();
+        }
 
-        // 3. Firebase Save
-        document.getElementById('addBtn').onclick = async () => {
-            const name = document.getElementById('productName').value;
-            const startDate = document.getElementById('startDate').value;
-            const category = document.getElementById('category').value;
-            if (name && startDate) {
-                await addDoc(collection(db, "products"), { name, startDate, category, createdAt: new Date() });
-                document.getElementById('productName').value = "";
-                alert("Product Saved!");
-            } else {
-                alert("Please fill all details!");
-            }
-        };
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'si' : 'en';
+            localStorage.setItem('glow_lang', currentLang);
+            updateLanguageUI();
+        }
 
-        // Real-time List
-        onSnapshot(query(collection(db, "products"), orderBy("createdAt", "desc")), (snap) => {
-            const container = document.getElementById('productContainer');
-            container.innerHTML = "<h3 style='color:white;'>Your Products</h3>";
-            snap.forEach(d => {
-                const p = d.data();
-                container.innerHTML += `<div class="product-item"><b>${p.name}</b> (${p.category})<br><small>Started: ${p.startDate}</small></div>`;
+        function updateLanguageUI() {
+            document.querySelectorAll('.lang-txt').forEach(el => {
+                el.innerText = el.getAttribute(`data-${currentLang}`);
             });
-        });
+            // Update placeholders
+            document.getElementById('ingInput').placeholder = currentLang === 'en' ? "Paste ingredients here..." : "අමුද්‍රව්‍ය මෙතන ඇතුළත් කරන්න...";
+            document.getElementById('prodName').placeholder = currentLang === 'en' ? "Product Name" : "නිපැයුමේ නම";
+        }
+
+        function updateClock() {
+            let now = new Date();
+            document.getElementById('slClock').innerText = now.toLocaleTimeString('en-US', { hour12: false });
+            let timeStr = now.getHours().toString().padStart(2,'0') + ":" + now.getMinutes().toString().padStart(2,'0');
+            if (config.days.includes(now.getDay()) && now.getSeconds() === 0) {
+                if (timeStr === config.mTime || timeStr === config.nTime) {
+                    document.getElementById('alertSound').play();
+                    alert(currentLang === 'en' ? "GlowSync AI: Skincare Time!" : "GlowSync AI: ස්කින්කෙයාර් වෙලාව හරි!");
+                }
+            }
+        }
+
+        async function updateWeather() {
+            try {
+                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=6.9271&longitude=79.8612&current=temperature_2m&daily=uv_index_max&timezone=auto');
+                const data = await res.json();
+                document.getElementById('temp').innerText = Math.round(data.current.temperature_2m) + "°C";
+                const uv = data.daily.uv_index_max[0];
+                document.getElementById('uv-val').innerText = uv;
+                if(uv >= 5) document.getElementById('uvWarning').style.display = 'block';
+            } catch (e) { console.log("Weather error"); }
+        }
+
+        function deepAIAnalyze() {
+            const rawInput = document.getElementById('ingInput').value.toLowerCase();
+            const skin = document.getElementById('skinType').value;
+            const resDiv = document.getElementById('labRes');
+            const ingredients = rawInput.split(/[,|\n]/).map(i => i.trim()).filter(i => i.length > 2);
+            let html = "";
+
+            if (ingredients.length === 0) {
+                resDiv.innerHTML = currentLang === 'en' ? "Please enter ingredients." : "කරුණාකර අමුද්‍රව්‍ය ඇතුළත් කරන්න.";
+                return;
+            }
+
+            if (rawInput.includes("retinol") && rawInput.includes("vitamin c")) {
+                let msg = currentLang === 'en' ? "Don't use Retinol & Vitamin C together!" : "Retinol සහ Vitamin C එකට පාවිච්චි කරන්න එපා!";
+                html += `<div class="res-item res-bad"><span class="res-title">⚠️ CONFLICT</span><p class="res-desc">${msg}</p></div>`;
+            }
+
+            ingredients.forEach(ing => {
+                let analysis = getDetailedAnalysis(ing, skin);
+                let statusClass = analysis.safety === 'danger' ? 'res-bad' : (analysis.safety === 'caution' ? 'res-warning' : 'res-good');
+                let icon = analysis.safety === 'danger' ? '❌' : (analysis.safety === 'caution' ? '⚠️' : '✅');
+                
+                let impact = currentLang === 'en' ? analysis.impact : analysis.impactSi;
+                let result = currentLang === 'en' ? analysis.result : analysis.resultSi;
+
+                html += `<div class="res-item ${statusClass}"><span class="res-title">${icon} ${ing}</span><p class="res-desc"><b>${currentLang === 'en' ? 'Analysis' : 'විශ්ලේෂණය'}:</b> ${impact}<br><b>${currentLang === 'en' ? 'Result' : 'ප්‍රතිඵලය'}:</b> ${result}</p></div>`;
+            });
+            resDiv.innerHTML = html;
+        }
+
+        function getDetailedAnalysis(name, skin) {
+            // Oily Skin Red Flags (New Logic)
+            if (skin === 'oily' && name.match(/coconut oil|cocoa butter|lanolin|petrolatum|isopropyl myristate|shea butter/)) {
+                return { 
+                    safety: 'danger', 
+                    impact: "High Comedogenic Ingredient.", 
+                    impactSi: "සිදුරු අවහිර කරන අමුද්‍රව්‍යයකි.",
+                    result: "This will clog pores and cause acne on oily skin.",
+                    resultSi: "මෙය සිදුරු අවහිර කර කුරුලෑ ඇති කිරීමට හේතු වේ."
+                };
+            }
+            if (name.match(/acid|salicylic|glycolic|lactic|aha|bha/)) {
+                return { 
+                    safety: skin==='sensitive'?'danger':'caution', 
+                    impact: "Exfoliant Acid.", 
+                    impactSi: "සම පිරිසිදු කරන අම්ලයකි.",
+                    result: "Removes dead cells. Use Sunscreen daily.",
+                    resultSi: "මැරුණු සෛල ඉවත් කරයි. සන්ක්‍රීම් අනිවාර්යයි."
+                };
+            }
+            if (name.match(/paraben|sulfate|glycol|peg|fragrance|alcohol/)) {
+                return { 
+                    safety: 'danger', 
+                    impact: "Synthetic/Preservative.", 
+                    impactSi: "කෘතීම රසායනිකයකි.",
+                    result: "May cause dryness or long-term irritation.",
+                    resultSi: "සම වියළීමට හෝ අසාත්මිකතා ඇති කළ හැක."
+                };
+            }
+            if (name.match(/glycerin|hyaluron|ceramide|niacinamide|panthenol/)) {
+                return { 
+                    safety: 'safe', 
+                    impact: "Skin Nutrient.", 
+                    impactSi: "සම පෝෂණය කරන ද්‍රව්‍යයකි.",
+                    result: "Excellent for hydration and repair.",
+                    resultSi: "සම නිරෝගීව හා තෙතමනය සහිතව තබයි."
+                };
+            }
+            return { 
+                safety: 'safe', 
+                impact: "General Ingredient.", 
+                impactSi: "සාමාන්‍ය අමුද්‍රව්‍යයකි.",
+                result: "No major side effects reported.",
+                resultSi: "විශේෂ අහිතකර බලපෑමක් නැත."
+            };
+        }
+
+        function refreshLab() { document.getElementById('ingInput').value = ""; document.getElementById('labRes').innerHTML = ""; document.getElementById('beepSound').play(); }
+        
+        function addProduct() {
+            let name = document.getElementById('prodName').value;
+            let date = document.getElementById('prodDate').value;
+            if(!name || !date) return;
+            config.products.push({ name, date, id: Date.now() });
+            save(); renderProducts();
+            document.getElementById('prodName').value = "";
+        }
+
+        function renderProducts() {
+            let html = "";
+            config.products.forEach(p => {
+                let diff = Math.floor((new Date() - new Date(p.date)) / (1000*60*60*24));
+                html += `<div class="routine-card"><b>${p.name}</b><br><small>${currentLang === 'en' ? 'Days Used' : 'භාවිතා කළ දින'}: ${diff}</small><button class="del-btn" onclick="delProd(${p.id})">×</button></div>`;
+            });
+            document.getElementById('prodList').innerHTML = html;
+        }
+
+        function delProd(id) { config.products = config.products.filter(p => p.id !== id); save(); renderProducts(); }
+        function savePeriod() { config.periodDate = document.getElementById('lastPeriodDate').value; save(); checkPeriod(); }
+        function checkPeriod() {
+            if(!config.periodDate) return;
+            let next = new Date(new Date(config.periodDate).getTime() + (28 * 24 * 60 * 60 * 1000));
+            let diff = Math.ceil((next - new Date()) / (1000*60*60*24));
+            if(diff <= 3 && diff >= 0) document.getElementById('periodNotice').style.display = 'block';
+            else document.getElementById('periodNotice').style.display = 'none';
+            document.getElementById('periodStatus').innerText = diff > 0 ? (currentLang === 'en' ? `Days to Next: ${diff}` : `මීළඟ චක්‍රයට දින: ${diff}`) : (currentLang === 'en' ? "Cycle Started!" : "චක්‍රය ආරම්භ වී ඇත!");
+        }
+
+        function nav(panel, bg) {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active-panel'));
+            document.getElementById(panel).classList.add('active-panel');
+            document.querySelectorAll('.bg-img').forEach(img => img.classList.remove('active-bg'));
+            document.getElementById(bg).classList.add('active-bg');
+        }
+
+        function toggleDay(btn, d) {
+            btn.classList.toggle('day-active');
+            if (config.days.includes(d)) config.days = config.days.filter(x => x !== d);
+            else config.days.push(d);
+        }
+
+        function loadSettingsUI() {
+            document.getElementById('mIn').value = config.mTime;
+            document.getElementById('nIn').value = config.nTime;
+            let btns = document.querySelectorAll('.day-btn');
+            config.days.forEach(d => btns[d].classList.add('day-active'));
+        }
+
+        function saveConfig() {
+            config.mTime = document.getElementById('mIn').value;
+            config.nTime = document.getElementById('nIn').value;
+            save(); alert(currentLang === 'en' ? "Settings Saved!" : "සුරැකුණා!");
+        }
+
+        function checkSuncream() {
+            document.getElementById('beepSound').play();
+            alert(currentLang === 'en' ? "Protection active! I will remind you in 2 hours." : "සක්‍රියයි! පැය 2කින් මම නැවත මතක් කරන්නම්.");
+            setTimeout(() => { document.getElementById('alertSound').play(); alert("GlowSync: Re-apply Sunscreen!"); }, 7200000);
+        }
+
+        function save() { localStorage.setItem('glow_config', JSON.stringify(config)); }
     </script>
 </body>
 </html>
